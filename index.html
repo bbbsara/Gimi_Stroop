@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار ستروب - المرحلتين</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div id="start-screen">
+        <h1>اختبار ستروب (علمي)</h1>
+        <p>الرجاء إدخال اسم الطالب:</p>
+        <input type="text" id="student-name" placeholder="الاسم الثلاثي">
+        <br>
+        <button id="start-btn" class="main-btn">ابدأ الاختبار</button>
+        
+        <div class="info-box">
+            <h3>يتكون الاختبار من مرحلتين:</h3>
+            <p>1️⃣ <strong>المرحلة الأولى:</strong> سهلة (اللون يطابق الكلمة).</p>
+            <p>2️⃣ <strong>المرحلة الثانية:</strong> صعبة (اللون يختلف عن الكلمة).</p>
+        </div>
+    </div>
+
+    <div id="instruction-screen" style="display:none;">
+        <h2 id="phase-title">عنوان المرحلة</h2>
+        <p id="phase-desc">وصف المرحلة</p>
+        <button id="phase-start-btn" class="main-btn">اضغط للبدء</button>
+    </div>
+
+    <div id="test-container" style="display:none;">
+        
+        <div class="top-bar">
+            <div id="phase-indicator">المرحلة: 1</div>
+            <div id="counter">1 / 20</div>
+        </div>
+
+        <div id="word-box">
+            <div id="word">---</div>
+        </div>
+
+        <div id="buttons">
+            <button class="btn" data-color="أحمر" style="background-color: #ff3b30;"></button>
+            <button class="btn" data-color="أزرق" style="background-color: #007aff;"></button>
+            <button class="btn" data-color="أخضر" style="background-color: #4cd964;"></button>
+            <button class="btn" data-color="أصفر" style="background-color: #ffeb3b;"></button>
+            <button class="btn" data-color="برتقالي" style="background-color: #ff9500;"></button>
+        </div>
+    </div>
+
+    <div id="end-screen" style="display:none;">
+        <h2>النتائج النهائية</h2>
+        <div class="result-box">
+            <p><strong>الطالب:</strong> <span id="res-name"></span></p>
+            <hr>
+            <p>⏱️ زمن المرحلة السهلة: <span id="res-p1"></span></p>
+            <p>❌ أخطاء المرحلة السهلة: <span id="res-p1-wrong" style="color:red"></span></p>
+            <hr>
+            <p>⏱️ زمن المرحلة الصعبة: <span id="res-p2"></span></p>
+            <p>❌ أخطاء المرحلة الصعبة: <span id="res-p2-wrong" style="color:red"></span></p>
+            <hr>
+            <p style="background:#e3f2fd; padding:10px; border-radius:5px;">
+                🧠 <strong>تأثير ستروب:</strong> <span id="res-stroop" style="font-weight:bold; color:#007aff;"></span>
+                <br><small>(الفرق الزمني بين المرحلتين)</small>
+            </p>
+            <p>📊 المتوسط العام: <span id="res-avg"></span></p>
+        </div>
+        <p id="status-msg" style="color:gray; margin-top:10px;">جاري الحفظ...</p>
+        <button onclick="location.reload()" class="retry-btn">اختبار جديد</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
