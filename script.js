@@ -1,5 +1,5 @@
 // ==========================================
-// رابط Web App الخاص بك (تم التحديث)
+// رابط Web App الخاص بك
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbypwGjMqJx2lT_L7wbPcuuj6_UShdCR1kPhG045lW4HvQScuNl4NiHcSGihZYgYNMEG/exec";
 // ==========================================
 
@@ -13,20 +13,15 @@ const colorsHex = {
 };
 
 // إعدادات الاختبار
-// يمكنك تعديل هذا الرقم لزيادة أو تقليل عدد الأسئلة في كل مرحلة
 const TRIALS_PER_PHASE = 20; 
 
-let currentPhase = 1; // 1 = متطابقة، 2 = مختلفة
+let currentPhase = 1; 
 let currentTrial = 0;
-
-// بيانات الطالب
 let studentName = "";
 
-// إحصائيات المرحلة الأولى (السهلة)
+// إحصائيات
 let p1_wrong = 0;
 let p1_times = [];
-
-// إحصائيات المرحلة الثانية (الصعبة)
 let p2_wrong = 0;
 let p2_times = [];
 
@@ -48,35 +43,33 @@ const wordEl = document.getElementById("word");
 const counterEl = document.getElementById("counter");
 const phaseIndEl = document.getElementById("phase-indicator");
 
-// --- 1. زر البداية الرئيسي ---
+// --- 1. زر البداية ---
 document.getElementById("start-btn").onclick = () => {
     studentName = document.getElementById("student-name").value.trim();
     if (!studentName) return alert("الرجاء كتابة اسم الطالب");
     
     startScreen.style.display = "none";
-    preparePhase(1); // البدء بالمرحلة الأولى
+    preparePhase(1); 
 };
 
-// --- 2. تجهيز المرحلة (تعليمات) ---
+// --- 2. تجهيز المرحلة ---
 function preparePhase(phaseNum) {
     currentPhase = phaseNum;
     currentTrial = 0;
     
-    // إخفاء الاختبار، إظهار التعليمات
     testContainer.style.display = "none";
     instructionScreen.style.display = "block";
-    document.body.style.backgroundColor = "#ffffff"; // إعادة الخلفية للأبيض
+    document.body.style.backgroundColor = "#ffffff"; 
 
     if (phaseNum === 1) {
         phaseTitle.textContent = "المرحلة الأولى (السهلة)";
-        phaseDesc.innerHTML = "في هذه المرحلة، <strong>لون الخلفية</strong> سيطابق الكلمة المكتوبة دائماً.<br>المطلوب: اضغط على الزر الذي يطابق اللون بأسرع ما يمكن.";
+        phaseDesc.innerHTML = "في هذه المرحلة: <strong>لون الخلفية</strong> يطابق الكلمة.<br>اضغط على الزر الذي يطابق اللون.";
     } else {
         phaseTitle.textContent = "المرحلة الثانية (الصعبة)";
-        phaseDesc.innerHTML = "في هذه المرحلة، <strong>لون الخلفية</strong> سيختلف عن الكلمة!<br>ركز على <strong>لون الخلفية</strong> فقط وتجاهل الكلمة.";
+        phaseDesc.innerHTML = "في هذه المرحلة: <strong>لون الخلفية</strong> يختلف عن الكلمة!<br>ركز على <strong>لون الخلفية</strong> وتجاهل الكلمة المكتوبة.";
     }
 }
 
-// زر بدء المرحلة من شاشة التعليمات
 phaseStartBtn.onclick = () => {
     instructionScreen.style.display = "none";
     testContainer.style.display = "flex";
@@ -84,16 +77,15 @@ phaseStartBtn.onclick = () => {
     nextTrial();
 };
 
-// --- 3. تشغيل المحاولة ---
+// --- 3. تشغيل المحاولة (التعديل هنا) ---
 function nextTrial() {
     currentTrial++;
     
-    // هل انتهت المرحلة الحالية؟
     if (currentTrial > TRIALS_PER_PHASE) {
         if (currentPhase === 1) {
-            preparePhase(2); // الانتقال للمرحلة الثانية
+            preparePhase(2); 
         } else {
-            finishTest(); // انتهاء الاختبار بالكامل
+            finishTest(); 
         }
         return;
     }
@@ -104,7 +96,7 @@ function nextTrial() {
     let bgColor;
 
     if (currentPhase === 1) {
-        // المرحلة السهلة: تطابق تام
+        // المرحلة السهلة: تطابق
         bgColor = wordText;
     } else {
         // المرحلة الصعبة: اختلاف إجباري
@@ -114,10 +106,17 @@ function nextTrial() {
         }
     }
 
-    // تطبيق الألوان
+    // 1. تغيير خلفية الشاشة
     document.body.style.backgroundColor = colorsHex[bgColor];
+    
+    // 2. كتابة الكلمة
     wordEl.textContent = wordText;
-    correctAnswer = bgColor; // الإجابة الصحيحة دائماً هي لون الخلفية
+
+    // 3. (التعديل الجديد) تغيير لون الخط ليطابق لون الخلفية
+    wordEl.style.color = colorsHex[bgColor]; 
+    
+    // الإجابة الصحيحة هي لون الخلفية
+    correctAnswer = bgColor; 
 
     trialStart = performance.now();
 }
@@ -134,7 +133,6 @@ document.querySelectorAll(".btn").forEach(btn => {
         let playerAns = btn.getAttribute("data-color");
         let timeTaken = Math.round(performance.now() - trialStart);
 
-        // تسجيل النتائج حسب المرحلة
         if (currentPhase === 1) {
             p1_times.push(timeTaken);
             if (playerAns !== correctAnswer) p1_wrong++;
@@ -153,20 +151,15 @@ function finishTest() {
     endScreen.style.display = "block";
     document.body.style.backgroundColor = "#f4f4f4";
 
-    // حساب المتوسطات
     const sum1 = p1_times.reduce((a,b)=>a+b, 0);
     const avg1 = Math.round(sum1 / p1_times.length) || 0;
 
     const sum2 = p2_times.reduce((a,b)=>a+b, 0);
     const avg2 = Math.round(sum2 / p2_times.length) || 0;
 
-    // معادلة تأثير ستروب: (زمن الصعب - زمن السهل)
     const stroopEffect = avg2 - avg1;
-    
-    // المتوسط العام
     const totalAvg = Math.round((sum1 + sum2) / (p1_times.length + p2_times.length));
 
-    // عرض النتائج على الشاشة
     document.getElementById("res-name").textContent = studentName;
     document.getElementById("res-p1").textContent = avg1 + " ms";
     document.getElementById("res-p1-wrong").textContent = p1_wrong;
@@ -175,7 +168,6 @@ function finishTest() {
     document.getElementById("res-stroop").textContent = stroopEffect + " ms";
     document.getElementById("res-avg").textContent = totalAvg + " ms";
 
-    // إرسال البيانات
     sendData(avg1, p1_wrong, avg2, p2_wrong, totalAvg, stroopEffect);
 }
 
