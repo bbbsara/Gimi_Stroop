@@ -1,5 +1,5 @@
 // ==========================================
-// رابط Web App الخاص بك
+// رابط Google Sheet الخاص بك
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbypwGjMqJx2lT_L7wbPcuuj6_UShdCR1kPhG045lW4HvQScuNl4NiHcSGihZYgYNMEG/exec";
 // ==========================================
 
@@ -12,7 +12,7 @@ const colorsHex = {
     "برتقالي": "#ff9500"
 };
 
-// إعدادات الاختبار
+// عدد الأسئلة لكل مرحلة
 const TRIALS_PER_PHASE = 20; 
 
 let currentPhase = 1; 
@@ -25,9 +25,11 @@ let p1_times = [];
 let p2_wrong = 0;
 let p2_times = [];
 
-// متغيرات مؤقتة
+// متغيرات الوقت
 let trialStart = 0;
 let correctAnswer = "";
+let phaseStartTime = 0;
+let timerInterval;
 
 // عناصر الواجهة
 const startScreen = document.getElementById("start-screen");
@@ -42,6 +44,7 @@ const phaseStartBtn = document.getElementById("phase-start-btn");
 const wordEl = document.getElementById("word");
 const counterEl = document.getElementById("counter");
 const phaseIndEl = document.getElementById("phase-indicator");
+const timerEl = document.getElementById("timer");
 
 // --- 1. زر البداية ---
 document.getElementById("start-btn").onclick = () => {
@@ -61,27 +64,50 @@ function preparePhase(phaseNum) {
     instructionScreen.style.display = "block";
     document.body.style.backgroundColor = "#ffffff"; 
 
+    clearInterval(timerInterval);
+
     if (phaseNum === 1) {
         phaseTitle.textContent = "المرحلة الأولى (السهلة)";
-        phaseDesc.innerHTML = "في هذه المرحلة: <strong>لون الخلفية</strong> يطابق الكلمة.<br>اضغط على الزر الذي يطابق اللون.";
+        phaseDesc.innerHTML = `
+            في هذه المرحلة، ستكون الأمور طبيعية.<br>
+            <strong>لون الخط</strong> سيطابق الكلمة المكتوبة.<br>
+            المطلوب: اضغط على الزر الذي يطابق اللون بأسرع ما يمكن.
+        `;
     } else {
         phaseTitle.textContent = "المرحلة الثانية (الصعبة)";
-        phaseDesc.innerHTML = "في هذه المرحلة: <strong>لون الخلفية</strong> يختلف عن الكلمة!<br>ركز على <strong>لون الخلفية</strong> وتجاهل الكلمة المكتوبة.";
+        phaseDesc.innerHTML = `
+            <strong>المطلوب:</strong> اضغط على اللون الحقيقي للكلمة المكتوبة.<br><br>
+            <strong>مثال:</strong> إذا ظهرت كلمة "أحمر" بلون <span style="color:blue; font-weight:bold;">أزرق</span>، يجب أن تضغط على زر <strong>"أزرق"</strong>.<br><br>
+            <span style="color:red; font-weight:bold;">لا تقرأ الكلمة!</span> فقط ركز على <strong>لون الخط</strong> وتجاهل النص.
+        `;
     }
 }
 
+// بدء المرحلة وتشغيل العداد
 phaseStartBtn.onclick = () => {
     instructionScreen.style.display = "none";
     testContainer.style.display = "flex";
     phaseIndEl.textContent = currentPhase === 1 ? "المرحلة: سهلة" : "المرحلة: صعبة (ستروب)";
+    
+    // تشغيل العداد
+    phaseStartTime = Date.now();
+    timerInterval = setInterval(updateTimer, 1000);
+    updateTimer(); 
+
     nextTrial();
 };
 
-// --- 3. تشغيل المحاولة (التعديل هنا) ---
+function updateTimer() {
+    const elapsed = Math.floor((Date.now() - phaseStartTime) / 1000);
+    timerEl.textContent = `الزمن: ${elapsed} ث`;
+}
+
+// --- 3. تشغيل المحاولة ---
 function nextTrial() {
     currentTrial++;
     
     if (currentTrial > TRIALS_PER_PHASE) {
+        clearInterval(timerInterval); 
         if (currentPhase === 1) {
             preparePhase(2); 
         } else {
@@ -96,26 +122,23 @@ function nextTrial() {
     let bgColor;
 
     if (currentPhase === 1) {
-        // المرحلة السهلة: تطابق
+        // المرحلة السهلة
         bgColor = wordText;
     } else {
-        // المرحلة الصعبة: اختلاف إجباري
+        // المرحلة الصعبة
         bgColor = pickRandom(words);
         while (bgColor === wordText) {
             bgColor = pickRandom(words);
         }
     }
 
-    // 1. تغيير خلفية الشاشة
-    document.body.style.backgroundColor = colorsHex[bgColor];
+    // تطبيق الألوان
+    document.body.style.backgroundColor = colorsHex[bgColor]; 
+    wordEl.textContent = wordText; 
     
-    // 2. كتابة الكلمة
-    wordEl.textContent = wordText;
-
-    // 3. (التعديل الجديد) تغيير لون الخط ليطابق لون الخلفية
+    // جعل لون الكلمة مطابقاً للون الخلفية لتحقيق التأثير البصري
     wordEl.style.color = colorsHex[bgColor]; 
     
-    // الإجابة الصحيحة هي لون الخلفية
     correctAnswer = bgColor; 
 
     trialStart = performance.now();
