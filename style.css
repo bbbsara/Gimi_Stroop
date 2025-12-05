@@ -11,20 +11,18 @@ body {
     min-height: 100vh;
     text-align: center;
     direction: rtl;
-    transition: background-color 0.2s; /* نعومة تغيير اللون */
+    transition: background-color 0.2s;
 }
 
-/* الصناديق الرئيسية */
 #start-screen, #instruction-screen, #end-screen {
     background: white;
     padding: 40px;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     width: 90%;
-    max-width: 500px;
+    max-width: 600px;
 }
 
-/* شاشة الاختبار */
 #test-container {
     width: 100%;
     height: 100vh;
@@ -40,17 +38,32 @@ body {
     display: flex;
     justify-content: space-between;
     width: 90%;
-    max-width: 600px;
-    background: rgba(0,0,0,0.2);
-    padding: 10px 20px;
+    max-width: 700px;
+    background: rgba(0,0,0,0.4);
+    padding: 15px 25px;
     border-radius: 10px;
     color: white;
     font-weight: bold;
     font-size: 18px;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 
-/* المربع الأبيض للكلمة */
+#timer {
+    color: #ffeb3b; /* لون أصفر للعداد ليكون بارزاً */
+    font-size: 20px;
+}
+
+/* تنسيق نص التعليمات */
+.instructions-text {
+    text-align: right;
+    font-size: 18px;
+    line-height: 1.8;
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #eee;
+}
+
 #word-box {
     background-color: white;
     padding: 40px 80px;
@@ -60,13 +73,12 @@ body {
 }
 
 #word {
-    font-size: 70px;
+    font-size: 80px;
     font-weight: 900;
     color: #222;
     margin: 0;
 }
 
-/* الأزرار */
 #buttons {
     display: flex;
     justify-content: center;
@@ -88,7 +100,6 @@ body {
 .btn:hover { transform: scale(1.1); }
 .btn:active { transform: scale(0.9); }
 
-/* أزرار التحكم */
 .main-btn, .retry-btn {
     padding: 12px 30px;
     font-size: 18px;
