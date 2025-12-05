@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>اختبار ستروب - المرحلتين</title>
+    <title>اختبار ستروب - النسخة النهائية</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -18,14 +18,14 @@
         
         <div class="info-box">
             <h3>يتكون الاختبار من مرحلتين:</h3>
-            <p>1️⃣ <strong>المرحلة الأولى:</strong> سهلة (اللون يطابق الكلمة).</p>
-            <p>2️⃣ <strong>المرحلة الثانية:</strong> صعبة (اللون يختلف عن الكلمة).</p>
+            <p>1️⃣ <strong>المرحلة الأولى:</strong> مرحلة التوافق (سهلة).</p>
+            <p>2️⃣ <strong>المرحلة الثانية:</strong> مرحلة التعارض (صعبة).</p>
         </div>
     </div>
 
     <div id="instruction-screen" style="display:none;">
         <h2 id="phase-title">عنوان المرحلة</h2>
-        <p id="phase-desc">وصف المرحلة</p>
+        <div id="phase-desc" class="instructions-text">وصف المرحلة</div>
         <button id="phase-start-btn" class="main-btn">اضغط للبدء</button>
     </div>
 
@@ -33,6 +33,7 @@
         
         <div class="top-bar">
             <div id="phase-indicator">المرحلة: 1</div>
+            <div id="timer">الزمن: 0 ث</div>
             <div id="counter">1 / 20</div>
         </div>
 
