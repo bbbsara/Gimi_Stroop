@@ -1,9 +1,10 @@
 // ==========================================
-// ✅ تم تحديث الرابط هنا
+// ✅ الرابط الجديد (الذي قمنا بتحديثه)
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwj1RDXx22MRzaiXzu9tJ35Q_aQhi2XlV2-37pkvqyKf9EQbFBH5UD8D6z1-qcxERXT/exec";
 // ==========================================
 
-const words = ["أحمر", "أزرق", "أخضر", "أصفر", "برتقالي"];
+// قائمة الألوان
+const wordsList = ["أحمر", "أزرق", "أخضر", "أصفر", "برتقالي"];
 const colorsHex = {
     "أحمر": "#ff3b30",
     "أزرق": "#007aff",
@@ -12,16 +13,15 @@ const colorsHex = {
     "برتقالي": "#ff9500"
 };
 
-// عدد الأسئلة لكل مرحلة
+// إعدادات الاختبار
 const TRIALS_PER_PHASE = 20; 
-
 let currentPhase = 1; 
 let currentTrial = 0;
 
-// متغيرات الطالب
+// بيانات الطالب
 let studentName = "";
-let studentGrade = "";  // متغير جديد
-let studentGender = ""; // متغير جديد
+let studentGrade = "";
+let studentGender = "";
 
 // إحصائيات
 let p1_wrong = 0;
@@ -35,41 +35,55 @@ let correctAnswer = "";
 let phaseStartTime = 0;
 let timerInterval;
 
-// عناصر الواجهة
+// عناصر HTML
 const startScreen = document.getElementById("start-screen");
 const instructionScreen = document.getElementById("instruction-screen");
 const testContainer = document.getElementById("test-container");
 const endScreen = document.getElementById("end-screen");
 
-const phaseTitle = document.getElementById("phase-title");
-const phaseDesc = document.getElementById("phase-desc");
-const phaseStartBtn = document.getElementById("phase-start-btn");
-
 const wordEl = document.getElementById("word");
 const counterEl = document.getElementById("counter");
-const phaseIndEl = document.getElementById("phase-indicator");
 const timerEl = document.getElementById("timer");
+const buttonsContainer = document.getElementById("buttons");
 
 // --- 1. زر البداية ---
 document.getElementById("start-btn").onclick = () => {
-    // قراءة البيانات من المدخلات
     studentName = document.getElementById("student-name").value.trim();
     
-    // محاولة قراءة المرحلة والجنس (إذا كانت موجودة في HTML)
+    // قراءة البيانات الجديدة بأمان
     const gradeInput = document.getElementById("student-grade");
     const genderInput = document.getElementById("student-gender");
-    
     studentGrade = gradeInput ? gradeInput.value.trim() : "";
     studentGender = genderInput ? genderInput.value : "";
 
-    // التحقق من تعبئة البيانات
     if (!studentName || !studentGrade || !studentGender) {
-        return alert("الرجاء تعبئة جميع الحقول (الاسم، المرحلة، الجنس)");
+        alert("الرجاء تعبئة جميع الحقول (الاسم، المرحلة، الجنس)");
+        return;
     }
     
     startScreen.style.display = "none";
+    
+    // توليد الأزرار الـ 5 مرة واحدة عند البداية
+    createButtons();
+    
     preparePhase(1); 
 };
+
+// --- دالة إنشاء الأزرار (التي كانت ناقصة) ---
+function createButtons() {
+    buttonsContainer.innerHTML = ""; // تنظيف
+    wordsList.forEach(colorName => {
+        let btn = document.createElement("button");
+        btn.className = "btn"; // ليأخذ الستايل من CSS
+        btn.style.backgroundColor = colorsHex[colorName]; // لون الزر
+        btn.setAttribute("data-color", colorName); // تخزين اسم اللون
+        
+        // عند الضغط على الزر
+        btn.onclick = () => checkAnswer(colorName);
+        
+        buttonsContainer.appendChild(btn);
+    });
+}
 
 // --- 2. تجهيز المرحلة ---
 function preparePhase(phaseNum) {
@@ -78,147 +92,141 @@ function preparePhase(phaseNum) {
     
     testContainer.style.display = "none";
     instructionScreen.style.display = "block";
-    document.body.style.backgroundColor = "#ffffff"; 
+    document.body.style.backgroundColor = "#ffffff"; // خلفية بيضاء للتعليمات
 
     clearInterval(timerInterval);
 
+    // نصوص التعليمات
     if (phaseNum === 1) {
-        phaseTitle.textContent = "المرحلة الأولى (السهلة)";
-        phaseDesc.innerHTML = `
-            في هذه المرحلة، ستكون الأمور طبيعية.<br>
-            <strong>لون الخط</strong> سيطابق الكلمة المكتوبة.<br>
-            المطلوب: اضغط على الزر الذي يطابق اللون بأسرع ما يمكن.
+        document.getElementById("phase-title").innerText = "المرحلة الأولى (السهلة)";
+        document.getElementById("phase-desc").innerHTML = `
+            ستظهر الكلمة باللون <strong>الأسود</strong>.<br>
+            المطلوب: اقرأ الكلمة واضغط على المربع الذي يحمل نفس لون معناها.
         `;
     } else {
-        phaseTitle.textContent = "المرحلة الثانية (الصعبة)";
-        phaseDesc.innerHTML = `
-            <strong>المطلوب:</strong> اضغط على اللون الحقيقي للكلمة المكتوبة.<br><br>
-            <strong>مثال:</strong> إذا ظهرت كلمة "أحمر" بلون <span style="color:blue; font-weight:bold;">أزرق</span>، يجب أن تضغط على زر <strong>"أزرق"</strong>.<br><br>
-            <span style="color:red; font-weight:bold;">لا تقرأ الكلمة!</span> فقط ركز على <strong>لون الخط</strong> وتجاهل النص.
+        document.getElementById("phase-title").innerText = "المرحلة الثانية (الصعبة)";
+        document.getElementById("phase-desc").innerHTML = `
+            ستظهر الكلمة بلون خط مختلف عن معناها!<br>
+            المطلوب: تجاهل الكلمة واضغط على <strong>لون الخط</strong>.
         `;
     }
 }
 
-// بدء المرحلة وتشغيل العداد
-phaseStartBtn.onclick = () => {
+// زر بدء المرحلة
+document.getElementById("phase-start-btn").onclick = () => {
     instructionScreen.style.display = "none";
-    testContainer.style.display = "flex";
-    phaseIndEl.textContent = currentPhase === 1 ? "المرحلة: سهلة" : "المرحلة: صعبة (ستروب)";
+    testContainer.style.display = "flex"; // أعدنا الـ flex ليظهر التنسيق
     
-    // تشغيل العداد
+    document.getElementById("phase-indicator").innerText = 
+        currentPhase === 1 ? "المرحلة: 1 (سهلة)" : "المرحلة: 2 (ستروب)";
+
     phaseStartTime = Date.now();
-    timerInterval = setInterval(updateTimer, 1000);
-    updateTimer(); 
+    timerInterval = setInterval(() => {
+        let elapsed = Math.floor((Date.now() - phaseStartTime) / 1000);
+        timerEl.innerText = `الزمن: ${elapsed} ث`;
+    }, 1000);
 
     nextTrial();
 };
 
-function updateTimer() {
-    const elapsed = Math.floor((Date.now() - phaseStartTime) / 1000);
-    timerEl.textContent = `الزمن: ${elapsed} ث`;
-}
-
-// --- 3. تشغيل المحاولة ---
+// --- 3. تشغيل السؤال التالي ---
 function nextTrial() {
-    currentTrial++;
-    
-    if (currentTrial > TRIALS_PER_PHASE) {
-        clearInterval(timerInterval); 
+    // شرط التوقف: إذا انتهت المحاولات
+    if (currentTrial >= TRIALS_PER_PHASE) {
+        clearInterval(timerInterval);
         if (currentPhase === 1) {
-            preparePhase(2); 
+            preparePhase(2); // الانتقال للمرحلة الثانية
         } else {
-            finishTest(); 
+            finishTest(); // إنهاء الاختبار
         }
         return;
     }
 
-    counterEl.textContent = `${currentTrial} / ${TRIALS_PER_PHASE}`;
+    currentTrial++;
+    counterEl.innerText = `${currentTrial} / ${TRIALS_PER_PHASE}`;
 
-    let wordText = pickRandom(words);
-    let bgColor;
+    let wordText = pickRandom(wordsList);
+    let inkColorName; 
+    let backgroundTarget; // اللون الذي ستأخذه الخلفية
 
     if (currentPhase === 1) {
-        // المرحلة السهلة
-        bgColor = wordText;
+        // === المرحلة الأولى: الكلمة أسود، الخلفية بلون الكلمة ===
+        wordEl.style.color = "black"; // طلبك: الكلمة بالأسود
+        inkColorName = wordText;      // الإجابة الصحيحة هي معنى الكلمة
+        backgroundTarget = wordText;  // الخلفية تطابق الكلمة
     } else {
-        // المرحلة الصعبة
-        bgColor = pickRandom(words);
-        while (bgColor === wordText) {
-            bgColor = pickRandom(words);
+        // === المرحلة الثانية: الكلمة بلون مختلف ===
+        inkColorName = pickRandom(wordsList);
+        while (inkColorName === wordText) {
+            inkColorName = pickRandom(wordsList);
         }
+        wordEl.style.color = colorsHex[inkColorName]; // لون الخط
+        backgroundTarget = inkColorName; // الخلفية تطابق لون الخط (لزيادة التركيز)
     }
 
-    // تطبيق الألوان
-    document.body.style.backgroundColor = colorsHex[bgColor]; 
-    wordEl.textContent = wordText; 
+    wordEl.innerText = wordText;
+    document.body.style.backgroundColor = colorsHex[backgroundTarget]; // تغيير الخلفية
     
-    // جعل لون الكلمة مطابقاً للون الخلفية لتحقيق التأثير البصري
-    wordEl.style.color = colorsHex[bgColor]; 
-    
-    correctAnswer = bgColor; 
-
+    correctAnswer = inkColorName; // الإجابة الصحيحة هي "اللون" الظاهر
     trialStart = performance.now();
+}
+
+// --- 4. فحص الإجابة ---
+function checkAnswer(selectedColor) {
+    let timeTaken = Math.round(performance.now() - trialStart);
+
+    if (currentPhase === 1) {
+        p1_times.push(timeTaken);
+        if (selectedColor !== correctAnswer) p1_wrong++;
+    } else {
+        p2_times.push(timeTaken);
+        if (selectedColor !== correctAnswer) p2_wrong++;
+    }
+
+    // الانتقال للسؤال التالي
+    nextTrial();
 }
 
 function pickRandom(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
 }
 
-// --- 4. التحقق من الإجابة ---
-document.querySelectorAll(".btn").forEach(btn => {
-    btn.onclick = () => {
-        if (testContainer.style.display === "none") return;
-
-        let playerAns = btn.getAttribute("data-color");
-        let timeTaken = Math.round(performance.now() - trialStart);
-
-        if (currentPhase === 1) {
-            p1_times.push(timeTaken);
-            if (playerAns !== correctAnswer) p1_wrong++;
-        } else {
-            p2_times.push(timeTaken);
-            if (playerAns !== correctAnswer) p2_wrong++;
-        }
-
-        nextTrial();
-    };
-});
-
-// --- 5. إنهاء وحساب النتائج ---
+// --- 5. إنهاء وإرسال النتائج ---
 function finishTest() {
     testContainer.style.display = "none";
     endScreen.style.display = "block";
     document.body.style.backgroundColor = "#f4f4f4";
 
+    // حساب المتوسطات
     const sum1 = p1_times.reduce((a,b)=>a+b, 0);
     const avg1 = Math.round(sum1 / p1_times.length) || 0;
-
+    
     const sum2 = p2_times.reduce((a,b)=>a+b, 0);
     const avg2 = Math.round(sum2 / p2_times.length) || 0;
 
     const stroopEffect = avg2 - avg1;
     const totalAvg = Math.round((sum1 + sum2) / (p1_times.length + p2_times.length));
 
-    document.getElementById("res-name").textContent = studentName;
-    document.getElementById("res-p1").textContent = avg1 + " ms";
-    document.getElementById("res-p1-wrong").textContent = p1_wrong;
-    document.getElementById("res-p2").textContent = avg2 + " ms";
-    document.getElementById("res-p2-wrong").textContent = p2_wrong;
-    document.getElementById("res-stroop").textContent = stroopEffect + " ms";
-    document.getElementById("res-avg").textContent = totalAvg + " ms";
+    // عرض النتائج
+    document.getElementById("res-name").innerText = studentName;
+    document.getElementById("res-p1").innerText = avg1 + " ms";
+    document.getElementById("res-p1-wrong").innerText = p1_wrong;
+    document.getElementById("res-p2").innerText = avg2 + " ms";
+    document.getElementById("res-p2-wrong").innerText = p2_wrong;
+    document.getElementById("res-stroop").innerText = stroopEffect + " ms";
+    document.getElementById("res-avg").innerText = totalAvg + " ms";
 
     sendData(avg1, p1_wrong, avg2, p2_wrong, totalAvg, stroopEffect);
 }
 
 function sendData(p1Time, p1Wr, p2Time, p2Wr, avg, stroop) {
     const status = document.getElementById("status-msg");
-    status.textContent = "جاري الحفظ في قاعدة البيانات...";
+    status.innerText = "جاري الحفظ...";
     
-    // إعداد البيانات للإرسال (تمت إضافة المرحلة والجنس)
     const dataToSend = {
-        name: studentName,     // تم تعديل المفتاح ليطابق السكربت
-        grade: studentGrade,   // جديد
-        gender: studentGender, // جديد
+        name: studentName,
+        grade: studentGrade,
+        gender: studentGender,
         p1_time: p1Time,
         p1_wrong: p1Wr,
         p2_time: p2Time,
@@ -234,12 +242,9 @@ function sendData(p1Time, p1Wr, p2Time, p2Wr, avg, stroop) {
         body: JSON.stringify(dataToSend)
     })
     .then(() => {
-        status.textContent = "✅ تم حفظ النتائج بنجاح في الجدول!";
-        status.style.color = "green";
+        status.innerHTML = "<b style='color:green'>✅ تم الحفظ بنجاح!</b>";
     })
     .catch(err => {
-        console.error(err);
-        status.textContent = "❌ فشل الاتصال، تأكد من الإنترنت.";
-        status.style.color = "red";
+        status.innerHTML = "<b style='color:red'>❌ خطأ في الاتصال</b>";
     });
 }
