@@ -4,146 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>اختبار ستروب - النسخة النهائية</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
-
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background-color: #f0f2f5;
-            text-align: center;
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden; 
-        }
-
-        /* تنسيق الصناديق */
-        #start-screen, #instruction-screen, #end-screen {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            width: 90%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto; /* للسماح بالتمرير في الشاشات الصغيرة */
-        }
-
-        h1, h2 { color: #333; margin-bottom: 20px; }
-        
-        /* حقول الإدخال */
-        input, select {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-family: 'Tajawal';
-            box-sizing: border-box;
-            text-align: center;
-            background-color: #fff;
-        }
-
-        .main-btn, .retry-btn {
-            background: #007aff;
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.2rem;
-            border-radius: 10px;
-            cursor: pointer;
-            margin-top: 20px;
-            font-family: 'Tajawal';
-            width: 100%;
-        }
-
-        .info-box {
-            background: #e3f2fd;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            text-align: right;
-            font-size: 0.95rem;
-        }
-
-        /* منطقة الاختبار */
-        #test-container {
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px 0;
-            box-sizing: border-box;
-        }
-
-        .top-bar {
-            width: 90%;
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-            color: #555;
-            margin-top: 10px;
-        }
-
-        #word-box {
-            flex-grow: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #word {
-            font-size: 5rem;
-            font-weight: 900;
-        }
-
-        #buttons {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            width: 90%;
-            max-width: 400px;
-            margin-bottom: 30px;
-        }
-        
-        #buttons .btn:last-child:nth-child(odd) {
-            grid-column: span 2;
-        }
-
-        .btn {
-            padding: 25px;
-            border: none;
-            border-radius: 15px;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.1s;
-        }
-        .btn:active { transform: scale(0.95); }
-
-        .hidden { display: none !important; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
     <div id="start-screen">
         <h1>اختبار ستروب (علمي)</h1>
-        <p>الرجاء إدخال بياناتك للبدء:</p>
+        <p>الرجاء إدخال البيانات المطلوبة للبدء:</p>
         
-        <input type="text" id="student-name" placeholder="الاسم الثلاثي" autocomplete="off">
-        <input type="text" id="student-grade" placeholder="المرحلة الدراسية (مثلاً: الرابع)" autocomplete="off">
+        <input type="text" id="student-name" placeholder="الاسم الثلاثي">
+        
+        <input type="text" id="student-grade" placeholder="المرحلة الدراسية (مثلاً: الرابع)">
+        
         <select id="student-gender">
             <option value="" disabled selected>اختر الجنس</option>
             <option value="Male">ذكر</option>
             <option value="Female">أنثى</option>
         </select>
 
-        <button id="start-btn" class="main-btn" onclick="goToInstructions()">متابعة</button>
+        <br>
+        <button id="start-btn" class="main-btn">ابدأ الاختبار</button>
         
         <div class="info-box">
             <h3>يتكون الاختبار من مرحلتين:</h3>
@@ -152,17 +33,18 @@
         </div>
     </div>
 
-    <div id="instruction-screen" class="hidden">
+    <div id="instruction-screen" style="display:none;">
         <h2 id="phase-title">عنوان المرحلة</h2>
-        <div id="phase-desc" style="line-height:1.8; margin-bottom:20px;">وصف المرحلة</div>
-        <button id="phase-start-btn" class="main-btn" onclick="startPhase()">ابدأ المرحلة</button>
+        <div id="phase-desc" class="instructions-text">وصف المرحلة</div>
+        <button id="phase-start-btn" class="main-btn">اضغط للبدء</button>
     </div>
 
-    <div id="test-container" class="hidden">
+    <div id="test-container" style="display:none;">
+        
         <div class="top-bar">
             <div id="phase-indicator">المرحلة: 1</div>
-            <div id="timer">0.0 ث</div>
-            <div id="counter">0 / 20</div>
+            <div id="timer">الزمن: 0 ث</div>
+            <div id="counter">1 / 20</div>
         </div>
 
         <div id="word-box">
@@ -170,17 +52,12 @@
         </div>
 
         <div id="buttons">
-            <button class="btn" onclick="handleInput('أحمر')" style="background-color: #ff3b30;"></button>
-            <button class="btn" onclick="handleInput('أزرق')" style="background-color: #007aff;"></button>
-            <button class="btn" onclick="handleInput('أخضر')" style="background-color: #4cd964;"></button>
-            <button class="btn" onclick="handleInput('أصفر')" style="background-color: #ffeb3b;"></button>
-            <button class="btn" onclick="handleInput('برتقالي')" style="background-color: #ff9500;"></button>
-        </div>
+            </div>
     </div>
 
-    <div id="end-screen" class="hidden">
+    <div id="end-screen" style="display:none;">
         <h2>النتائج النهائية</h2>
-        <div class="result-box" style="text-align:right;">
+        <div class="result-box">
             <p><strong>الطالب:</strong> <span id="res-name"></span></p>
             <hr>
             <p>⏱️ زمن المرحلة السهلة: <span id="res-p1"></span></p>
@@ -189,204 +66,16 @@
             <p>⏱️ زمن المرحلة الصعبة: <span id="res-p2"></span></p>
             <p>❌ أخطاء المرحلة الصعبة: <span id="res-p2-wrong" style="color:red"></span></p>
             <hr>
-            <p style="background:#e3f2fd; padding:10px; border-radius:5px; text-align:center;">
-                🧠 <strong>تأثير ستروب:</strong> <span id="res-stroop" style="font-weight:bold; color:#007aff; font-size:1.2rem;"></span> ms
+            <p style="background:#e3f2fd; padding:10px; border-radius:5px;">
+                🧠 <strong>تأثير ستروب:</strong> <span id="res-stroop" style="font-weight:bold; color:#007aff;"></span>
                 <br><small>(الفرق الزمني بين المرحلتين)</small>
             </p>
+            <p>📊 المتوسط العام: <span id="res-avg"></span></p>
         </div>
         <p id="status-msg" style="color:gray; margin-top:10px;">جاري حفظ البيانات...</p>
         <button onclick="location.reload()" class="retry-btn">اختبار جديد</button>
     </div>
 
-    <script>
-        // ========================================================
-        // تم تحديث الرابط الجديد هنا بنجاح ✅
-        // ========================================================
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby3rdilBJSLLiy7xkfctJ0Mi3kRxo_7ds38KzbHzRyGKoq1jy_wgJw3neKxIEDHtV3a/exec"; 
-
-        let studentData = { name: "", grade: "", gender: "" };
-
-        const colors = [
-            { name: "أحمر", code: "#ff3b30" },
-            { name: "أزرق", code: "#007aff" },
-            { name: "أخضر", code: "#4cd964" },
-            { name: "أصفر", code: "#ffeb3b" },
-            { name: "برتقالي", code: "#ff9500" }
-        ];
-
-        let phases = [
-            { 
-                id: 1, 
-                name: "المرحلة الأولى (التوافق)", 
-                desc: "في هذه المرحلة، سيظهر اسم اللون بنفس لون الخط.<br>مثال: كلمة <span style='color:red; font-weight:bold'>أحمر</span> ستكون ملونة بالأحمر.<br>المطلوب: اضغط على الزر الذي يطابق اللون.",
-                trials: 20, 
-                type: "congruent" 
-            },
-            { 
-                id: 2, 
-                name: "المرحلة الثانية (التعارض)", 
-                desc: "في هذه المرحلة، سيظهر اسم اللون بلون مختلف!<br>مثال: كلمة <strong>أحمر</strong> ستظهر باللون <span style='color:blue; font-weight:bold'>الأزرق</span>.<br>المطلوب: تجاهل الكلمة واضغط على <strong>لون الخط</strong>.",
-                trials: 20, 
-                type: "incongruent" 
-            }
-        ];
-
-        let currentPhaseIndex = 0;
-        let currentTrial = 0;
-        let trialsData = [];
-        let startTime = 0;
-        
-        let results = {
-            p1_time: 0, p1_wrong: 0,
-            p2_time: 0, p2_wrong: 0
-        };
-
-        function goToInstructions() {
-            const name = document.getElementById('student-name').value.trim();
-            const grade = document.getElementById('student-grade').value.trim();
-            const gender = document.getElementById('student-gender').value;
-
-            if (!name || !grade || !gender) {
-                alert("الرجاء تعبئة جميع الحقول (الاسم، المرحلة، الجنس)");
-                return;
-            }
-
-            studentData.name = name;
-            studentData.grade = grade;
-            studentData.gender = gender;
-
-            document.getElementById('start-screen').classList.add('hidden');
-            document.getElementById('instruction-screen').classList.remove('hidden');
-            setupPhaseInfo();
-        }
-
-        function setupPhaseInfo() {
-            const phase = phases[currentPhaseIndex];
-            document.getElementById('phase-title').innerText = phase.name;
-            document.getElementById('phase-desc').innerHTML = phase.desc;
-        }
-
-        function startPhase() {
-            document.getElementById('instruction-screen').classList.add('hidden');
-            document.getElementById('test-container').classList.remove('hidden');
-            
-            document.getElementById('phase-indicator').innerText = `المرحلة: ${currentPhaseIndex + 1}`;
-            currentTrial = 0;
-            trialsData = generateTrials(phases[currentPhaseIndex]);
-            
-            if(currentPhaseIndex === 0) results.p1_wrong = 0;
-            else results.p2_wrong = 0;
-
-            nextTrial();
-        }
-
-        function generateTrials(phase) {
-            let generated = [];
-            for (let i = 0; i < phase.trials; i++) {
-                let textObj = colors[Math.floor(Math.random() * colors.length)];
-                let colorObj;
-
-                if (phase.type === "congruent") {
-                    colorObj = textObj;
-                } else {
-                    do {
-                        colorObj = colors[Math.floor(Math.random() * colors.length)];
-                    } while (colorObj.name === textObj.name);
-                }
-                generated.push({ text: textObj.name, colorCode: colorObj.code, colorName: colorObj.name });
-            }
-            return generated;
-        }
-
-        function nextTrial() {
-            if (currentTrial >= trialsData.length) {
-                endPhase();
-                return;
-            }
-
-            const trial = trialsData[currentTrial];
-            const wordEl = document.getElementById('word');
-            
-            wordEl.innerText = trial.text;
-            wordEl.style.color = trial.colorCode;
-            document.getElementById('counter').innerText = `${currentTrial + 1} / ${phases[currentPhaseIndex].trials}`;
-
-            startTime = Date.now();
-        }
-
-        function handleInput(selectedColor) {
-            const trial = trialsData[currentTrial];
-            const endTime = Date.now();
-            const timeTaken = endTime - startTime;
-
-            if (selectedColor === trial.colorName) {
-                if (currentPhaseIndex === 0) results.p1_time += timeTaken;
-                else results.p2_time += timeTaken;
-                
-                currentTrial++;
-                setTimeout(nextTrial, 100);
-            } else {
-                if (currentPhaseIndex === 0) results.p1_wrong++;
-                else results.p2_wrong++;
-                
-                document.body.style.backgroundColor = "#ffebee";
-                setTimeout(() => { document.body.style.backgroundColor = "#f0f2f5"; }, 200);
-            }
-        }
-
-        function endPhase() {
-            document.getElementById('test-container').classList.add('hidden');
-            
-            if (currentPhaseIndex < phases.length - 1) {
-                currentPhaseIndex++;
-                document.getElementById('instruction-screen').classList.remove('hidden');
-                setupPhaseInfo();
-            } else {
-                showResults();
-            }
-        }
-
-        function showResults() {
-            document.getElementById('end-screen').classList.remove('hidden');
-            
-            const avgTime = Math.round((results.p1_time + results.p2_time) / (phases[0].trials + phases[1].trials));
-            const stroopEffect = Math.round(results.p2_time - results.p1_time);
-
-            document.getElementById('res-name').innerText = studentData.name;
-            document.getElementById('res-p1').innerText = (results.p1_time / 1000).toFixed(2) + " ث";
-            document.getElementById('res-p1-wrong').innerText = results.p1_wrong;
-            document.getElementById('res-p2').innerText = (results.p2_time / 1000).toFixed(2) + " ث";
-            document.getElementById('res-p2-wrong').innerText = results.p2_wrong;
-            document.getElementById('res-stroop').innerText = stroopEffect;
-            document.getElementById('res-avg').innerText = avgTime + " ms";
-
-            sendDataToSheet(avgTime, stroopEffect);
-        }
-
-        function sendDataToSheet(avg, effect) {
-            const dataToSend = {
-                name: studentData.name,
-                grade: studentData.grade,
-                gender: studentData.gender,
-                p1_time: (results.p1_time / 1000).toFixed(2),
-                p1_wrong: results.p1_wrong,
-                p2_time: (results.p2_time / 1000).toFixed(2),
-                p2_wrong: results.p2_wrong,
-                avg_time: avg,
-                stroop_effect: effect
-            };
-
-            fetch(SCRIPT_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(dataToSend)
-            }).then(() => {
-                document.getElementById('status-msg').innerHTML = "<b style='color:green'>✅ تم حفظ النتائج بنجاح!</b>";
-            }).catch(err => {
-                document.getElementById('status-msg').innerHTML = "<b style='color:red'>❌ حدث خطأ في الاتصال.</b>";
-            });
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
