@@ -1,6 +1,6 @@
 // ==========================================
-// رابط Google Sheet الخاص بك
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbypwGjMqJx2lT_L7wbPcuuj6_UShdCR1kPhG045lW4HvQScuNl4NiHcSGihZYgYNMEG/exec";
+// ✅ تم تحديث الرابط هنا
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwj1RDXx22MRzaiXzu9tJ35Q_aQhi2XlV2-37pkvqyKf9EQbFBH5UD8D6z1-qcxERXT/exec";
 // ==========================================
 
 const words = ["أحمر", "أزرق", "أخضر", "أصفر", "برتقالي"];
@@ -17,7 +17,11 @@ const TRIALS_PER_PHASE = 20;
 
 let currentPhase = 1; 
 let currentTrial = 0;
+
+// متغيرات الطالب
 let studentName = "";
+let studentGrade = "";  // متغير جديد
+let studentGender = ""; // متغير جديد
 
 // إحصائيات
 let p1_wrong = 0;
@@ -48,8 +52,20 @@ const timerEl = document.getElementById("timer");
 
 // --- 1. زر البداية ---
 document.getElementById("start-btn").onclick = () => {
+    // قراءة البيانات من المدخلات
     studentName = document.getElementById("student-name").value.trim();
-    if (!studentName) return alert("الرجاء كتابة اسم الطالب");
+    
+    // محاولة قراءة المرحلة والجنس (إذا كانت موجودة في HTML)
+    const gradeInput = document.getElementById("student-grade");
+    const genderInput = document.getElementById("student-gender");
+    
+    studentGrade = gradeInput ? gradeInput.value.trim() : "";
+    studentGender = genderInput ? genderInput.value : "";
+
+    // التحقق من تعبئة البيانات
+    if (!studentName || !studentGrade || !studentGender) {
+        return alert("الرجاء تعبئة جميع الحقول (الاسم، المرحلة، الجنس)");
+    }
     
     startScreen.style.display = "none";
     preparePhase(1); 
@@ -198,8 +214,11 @@ function sendData(p1Time, p1Wr, p2Time, p2Wr, avg, stroop) {
     const status = document.getElementById("status-msg");
     status.textContent = "جاري الحفظ في قاعدة البيانات...";
     
+    // إعداد البيانات للإرسال (تمت إضافة المرحلة والجنس)
     const dataToSend = {
-        student_name: studentName,
+        name: studentName,     // تم تعديل المفتاح ليطابق السكربت
+        grade: studentGrade,   // جديد
+        gender: studentGender, // جديد
         p1_time: p1Time,
         p1_wrong: p1Wr,
         p2_time: p2Time,
